@@ -1,0 +1,45 @@
+{
+  "serial": {
+    "port": "auto",
+    "baud": 115200
+  },
+  "pines": {
+    "motor_rpwm": 25,
+    "motor_lpwm": 26,
+    "motor_en": 27,
+    "encoder_a": 32,
+    "encoder_b": 33,
+    "servo_c1": 18,
+    "servo_c2": 19,
+    "servo_c3": 23,
+    "tof_sda": 21,
+    "tof_scl": 22,
+    "ir_salida": 34,
+    "paro_emergencia": 35,
+    "boton_arranque": 36,
+    "boton_paro": 39
+  },
+  "geometria_cm": {
+    "distancia_entre_rodillos": 72,
+    "pivotes": [ 31, 42.5, 54 ],
+    "ancho_banda": 12,
+    "diametro_rodillo": 4.8
+  },
+  "banda": {
+    "velocidad_nominal_mm_s": 100,
+    "velocidad_inspeccion_mm_s": 60
+  },
+  "vision": {
+    "camara_index": 0,
+    "resolucion": [ 1280, 720 ],
+    "zona_decision_cm": 4,
+    "tolerancia_area_pct": 5,
+    "confianza_minima": 0.70
+  },
+  "clasificacion": {
+    "C1": "circulo",
+    "C2": "cuadrado",
+    "C3": "triangulo",
+    "rechazo": [ "pentagono", "otro" ]
+  }
+}
