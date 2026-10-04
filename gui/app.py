@@ -52,4 +52,4 @@ def main(fuente=0):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    main("http://192.168.100.19:4747/video")   # tu IP real de DroidCam
+    main(1)

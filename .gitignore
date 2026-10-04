@@ -6,3 +6,4 @@ __pycache__/
 datos/videos/
 datos/capturas/
 *.db
+firmware/*.bin
