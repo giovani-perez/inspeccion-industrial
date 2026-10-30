@@ -11,6 +11,8 @@ import time
 
 import cv2
 
+from core import camara
+
 CARPETA = os.path.join("datos", "capturas")
 
 
@@ -25,34 +27,30 @@ def listar(maximo=5):
     return encontrados
 
 
-def configurar(cap):
-    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))   # evita la compresión lenta
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-    cap.set(cv2.CAP_PROP_FPS, 30)
-    cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)   # 0.25 = manual en DirectShow
-    cap.set(cv2.CAP_PROP_AUTO_WB, 0)
-    cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-
-
 def main():
     indice = int(sys.argv[1]) if len(sys.argv) > 1 else 1
-    cap = cv2.VideoCapture(indice, cv2.CAP_DSHOW)
-    if not cap.isOpened() or not cap.read()[0]:
-        cap.release()
+    cap = camara.abrir(indice, -7)
+    if cap is None or not cap.read()[0]:
+        if cap is not None:
+            cap.release()
         print(f"No se pudo abrir el índice {indice}.")
         print("Índices que sí abren:", listar() or "ninguno")
         print("Revisa el cable, que ninguna otra aplicación use la cámara y los permisos de Windows.")
         return
-    configurar(cap)
     os.makedirs(CARPETA, exist_ok=True)
 
     ventana = "Calibracion C270"
     cv2.namedWindow(ventana)
     cv2.createTrackbar("Exposicion", ventana, 7, 12, lambda v: None)   # 0..12 -> -13..-1
     anterior = None
+    fmt = camara.formato(cap) or "?"
+    t_prev, fps = time.time(), 0.0
     while True:
         ok, frame = cap.read()
+        ahora = time.time()
+        if ahora > t_prev:
+            fps = 0.9 * fps + 0.1 / (ahora - t_prev)
+        t_prev = ahora
         if not ok:
             print("Sin imagen")
             break
@@ -62,7 +60,7 @@ def main():
             anterior = pos
         h, w = frame.shape[:2]
         gris = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        info = (f"indice {indice}  {w}x{h}  exposicion pedida={pos - 13}  "
+        info = (f"indice {indice}  {fmt} {w}x{h}  {fps:4.1f} FPS  exposicion pedida={pos - 13}  "
                 f"leida={cap.get(cv2.CAP_PROP_EXPOSURE):.1f}  brillo medio={gris.mean():.0f}")
         cv2.putText(frame, info, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
         cv2.imshow(ventana, frame)
